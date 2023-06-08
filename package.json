@@ -1,0 +1,49 @@
+{
+  "name": "@nerd-coder/graphql-codegen-svelte-apollo",
+  "version": "0.1.0",
+  "description": "Codegen plugins to generate fully typed queries for Svelte + Apollo",
+  "packageManager": "pnpm@8.5.1",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "prettier": "prettier --write .",
+    "lint": "eslint .",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "repository": "github:nerd-coder/graphql-codegen-svelte-apollo",
+  "keywords": [
+    "graphql",
+    "typescript",
+    "apollo-client",
+    "code-generator"
+  ],
+  "author": "Toanzzz",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "prettier": {
+    "useTabs": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false,
+    "printWidth": 100,
+    "arrowParens": "avoid"
+  },
+  "devDependencies": {
+    "@graphql-codegen/plugin-helpers": "^5.0.0",
+    "@graphql-codegen/visitor-plugin-common": "^4.0.0",
+    "@rollup/plugin-typescript": "^11.1.1",
+    "graphql": "^16.6.0",
+    "rollup": "^3.24.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "vitest": "^0.32.0"
+  },
+  "dependencies": {
+    "pascal-case": "^3.1.2"
+  }
+}
