@@ -12,7 +12,8 @@
     "prettier": "prettier --write .",
     "lint": "eslint .",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "release-it"
   },
   "repository": "github:nerd-coder/graphql-codegen-svelte-apollo",
   "keywords": [
@@ -26,6 +27,18 @@
   "publishConfig": {
     "access": "public"
   },
+  "release-it": {
+    "hooks": {
+      "before:init": [
+        "npm run lint",
+        "npm test -- --run",
+        "npm run build"
+      ]
+    },
+    "npm": {
+      "publish": true
+    }
+  },
   "prettier": {
     "useTabs": false,
     "singleQuote": true,
@@ -34,11 +47,35 @@
     "printWidth": 100,
     "arrowParens": "avoid"
   },
+  "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "ignorePatterns": [
+      "/dist"
+    ],
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2020
+    }
+  },
   "devDependencies": {
     "@graphql-codegen/plugin-helpers": "^5.0.0",
     "@graphql-codegen/visitor-plugin-common": "^4.0.0",
     "@rollup/plugin-typescript": "^11.1.1",
-    "graphql": "^16.6.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.9",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
+    "graphql": "^16.0.0",
+    "prettier": "^2.8.8",
+    "release-it": "^15.11.0",
     "rollup": "^3.24.0",
     "rollup-plugin-filesize": "^10.0.0",
     "vitest": "^0.32.0"
@@ -50,6 +87,6 @@
     "graphql": "^15.0.0 || ^16.0.0"
   },
   "overrides": {
-    "graphql": "^16.0.0"
+    "graphql": "$graphql"
   }
 }

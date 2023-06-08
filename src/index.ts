@@ -71,9 +71,6 @@ export const plugin: PluginFunction<Config, Types.ComplexPluginOutput> = (
       const operationName = o.name?.value
       if (!operationName) return null
 
-      const dsl = `export const ${operationName}Doc = gql\`${
-        documents.find(d => d.rawSDL?.includes(`${o.operation} ${operationName}`))?.rawSDL
-      }\``
       const op = `${pascalCase(operationName)}${pascalCase(o.operation)}`
       const opv = `${op}Variables`
       let operation
@@ -158,6 +155,7 @@ export const plugin: PluginFunction<Config, Types.ComplexPluginOutput> = (
       return operation
     })
     .join('\n')
+
   return {
     prepend: imports,
     content: [

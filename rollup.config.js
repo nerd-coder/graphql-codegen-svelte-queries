@@ -12,5 +12,5 @@ export default defineConfig({
     { file: pkg.module, format: 'es', sourcemap },
     { file: pkg.main, format: 'cjs', sourcemap },
   ],
-  plugins: [typescript({ exclude: ['test/**'] }), filesize()],
+  plugins: [typescript({ exclude: ['tests/**'] }), filesize()],
 })
