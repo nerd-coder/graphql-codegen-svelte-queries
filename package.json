@@ -45,5 +45,11 @@
   },
   "dependencies": {
     "pascal-case": "^3.1.2"
+  },
+  "peerDependencies": {
+    "graphql": "^15.0.0 || ^16.0.0"
+  },
+  "overrides": {
+    "graphql": "^16.0.0"
   }
 }
