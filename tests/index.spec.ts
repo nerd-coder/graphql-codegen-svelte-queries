@@ -10,7 +10,7 @@ type CodegenTestCase = [
   }
 ]
 
-describe.skip('graphql', () => {
+describe('graphql', () => {
   it.each<CodegenTestCase>([
     [
       'query',
