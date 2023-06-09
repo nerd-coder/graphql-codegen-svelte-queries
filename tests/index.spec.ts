@@ -43,6 +43,6 @@ describe('graphql', async () => {
   })
 
   it('should contains Query defination', async () => {
-    expect(result.content).toMatch(/^export const test = \(options: ReadableQueryOption<TestQuery, TestQueryVariables>\)/gm)
+    expect(result.content).toMatch(/^export const test = \(options\?: ReadableQueryOption<TestQuery, TestQueryVariables>\)/gm)
   })
 })
