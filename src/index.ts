@@ -77,9 +77,8 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
   ]
 
   const imports = [
-    `import { gql, NetworkStatus, ${operationImports
-      .map(z => `type ${z}`)
-      .join(', ')} } from '@apollo/client'`,
+    `import type { ${operationImports.join(', ')} } from '@apollo/client'`,
+    `import { gql, NetworkStatus } from '@apollo/client/core'`,
     `import { readable, type Readable } from 'svelte/store'`,
     `import client from '${config.clientPath}'`,
   ]
