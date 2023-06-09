@@ -1,6 +1,6 @@
 {
   "name": "@nerd-coder/graphql-codegen-svelte-apollo",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Codegen plugins to generate fully typed queries for Svelte + Apollo",
   "packageManager": "pnpm@8.5.1",
   "main": "dist/index.cjs",
