@@ -23,7 +23,7 @@ export interface SvelteApolloPluginConfig
 
 function getDefaultOptions(config?: SvelteApolloPluginConfig): SvelteApolloPluginConfig {
   const clientPath = config?.clientPath
-  if (!clientPath) throw new Error('Missing `config`')
+  if (!clientPath) throw new Error('`config.clientPath` is required')
   return {
     ...config,
     clientPath,
@@ -108,9 +108,7 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
 }
 
 export const validate: PluginValidateFn<SvelteApolloPluginConfig> = (_, __, config) => {
-  if (!config.clientPath) {
-    console.warn('Client path is not present in config')
-  }
+  if (!config.clientPath) throw new Error('`config.clientPath` is required')
 }
 
 function genForQuery(

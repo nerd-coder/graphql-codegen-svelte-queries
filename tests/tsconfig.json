@@ -3,7 +3,7 @@
     "types": ["vitest/globals"],
     "noEmit": true,
     "typeRoots": ["../node_modules/@types"],
-    "rootDir": ".",
+    "rootDir": "..",
     "paths": { "@nerd-coder/graphql-codegen-svelte-apollo": ["../src/index.ts"] }
   }
 }
