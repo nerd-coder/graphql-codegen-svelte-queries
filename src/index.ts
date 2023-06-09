@@ -1,4 +1,6 @@
 import type { PluginFunction, PluginValidateFn, Types } from '@graphql-codegen/plugin-helpers'
+import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript'
+import type { TypeScriptDocumentsPluginConfig } from '@graphql-codegen/typescript-operations'
 import { ClientSideBaseVisitor, type LoadedFragment } from '@graphql-codegen/visitor-plugin-common'
 import {
   concatAST,
@@ -7,19 +9,35 @@ import {
   type FragmentDefinitionNode,
   type OperationDefinitionNode,
   visit,
+  OperationTypeNode,
 } from 'graphql'
 import { pascalCase } from 'pascal-case'
 
-interface Config {
-  clientPath?: string
+export interface SvelteApolloPluginConfig
+  extends TypeScriptPluginConfig,
+    TypeScriptDocumentsPluginConfig {
+  clientPath: string
   asyncQuery?: boolean
+  documentVariableSuffix?: string
 }
 
-export const plugin: PluginFunction<Config, Types.ComplexPluginOutput> = (
+function getDefaultOptions(config?: SvelteApolloPluginConfig): SvelteApolloPluginConfig {
+  const clientPath = config?.clientPath
+  if (!clientPath) throw new Error('Missing `config`')
+  return {
+    ...config,
+    clientPath,
+    asyncQuery: config?.asyncQuery || false,
+    documentVariableSuffix: config?.documentVariableSuffix || 'Doc',
+  }
+}
+
+export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPluginOutput> = (
   schema,
   documents,
-  config
+  _config
 ) => {
+  const config = getDefaultOptions(_config)
   const allAst = concatAST(documents.map(d => d.document).filter((a): a is DocumentNode => !!a))
 
   const allFragments: LoadedFragment[] = [
@@ -33,141 +51,127 @@ export const plugin: PluginFunction<Config, Types.ComplexPluginOutput> = (
       onType: fragmentDef.typeCondition.name.value,
       isExternal: false,
     })),
+    ...(config.externalFragments || []),
   ]
 
   const visitor = new ClientSideBaseVisitor(
     schema,
     allFragments,
-    {},
-    { documentVariableSuffix: 'Doc' },
+    config,
+    { documentVariableSuffix: config.documentVariableSuffix },
     documents
   )
   const visitorResult = visit(allAst, visitor)
 
   const operations = allAst.definitions.filter(
-    d => d.kind === Kind.OPERATION_DEFINITION
-  ) as OperationDefinitionNode[]
+    (d): d is OperationDefinitionNode => d.kind === Kind.OPERATION_DEFINITION
+  )
 
-  const operationImport = `${
-    operations.some(op => op.operation == 'query')
-      ? `ApolloQueryResult, ObservableQuery, WatchQueryOptions, ${
-          config.asyncQuery ? 'QueryOptions, ' : ''
-        }`
-      : ''
-  }${operations.some(op => op.operation == 'mutation') ? 'MutationOptions, ' : ''}${
-    operations.some(op => op.operation == 'subscription') ? 'SubscriptionOptions, ' : ''
-  }`.slice(0, -2)
-
-  const imports = [
-    `import client from "${config.clientPath}";`,
-    `import type { ${operationImport} } from "@apollo/client";`,
-    `import { readable } from "svelte/store";`,
-    `import type { Readable } from "svelte/store";`,
-    `import gql from "graphql-tag"`,
+  const operationImports = [
+    ...(config.asyncQuery ? ['QueryOptions'] : []),
+    ...(operations.some(op => op.operation == 'query')
+      ? ['ApolloQueryResult', 'ObservableQuery', 'WatchQueryOptions']
+      : []),
+    ...(operations.some(op => op.operation == 'mutation') ? ['MutationOptions'] : []),
+    ...(operations.some(op => op.operation == 'subscription') ? ['SubscriptionOptions'] : []),
   ]
 
-  const ops = operations
-    .map(o => {
-      const operationName = o.name?.value
-      if (!operationName) return null
+  const imports = [
+    `import { gql, NetworkStatus, ${operationImports
+      .map(z => `type ${z}`)
+      .join(', ')} } from '@apollo/client'`,
+    `import { readable, type Readable } from 'svelte/store'`,
+    `import client from '${config.clientPath}'`,
+  ]
 
-      const op = `${pascalCase(operationName)}${pascalCase(o.operation)}`
-      const opv = `${op}Variables`
-      let operation
-      if (o.operation == 'query') {
-        operation = `export const ${operationName} = (
-            options: Omit<
-              WatchQueryOptions<${opv}>, 
-              "query"
-            >
-          ): Readable<
-            ApolloQueryResult<${op}> & {
-              query: ObservableQuery<
-                ${op},
-                ${opv}
-              >;
-            }
-          > => {
-            const q = client.watchQuery({
-              query: ${pascalCase(operationName)}Doc,
-              ...options,
-            });
-            var result = readable<
-              ApolloQueryResult<${op}> & {
-                query: ObservableQuery<
-                  ${op},
-                  ${opv}
-                >;
-              }
-            >(
-              { data: {} as any, loading: true, error: undefined, networkStatus: 1, query: q },
-              (set) => {
-                q.subscribe((v: any) => {
-                  set({ ...v, query: q });
-                });
-              }
-            );
-            return result;
-          }
-        `
-        if (config.asyncQuery) {
-          operation =
-            operation +
-            `
-              export const Async${operationName} = (
-                options: Omit<
-                  QueryOptions<${opv}>,
-                  "query"
-                >
-              ) => {
-                return client.query<${op}>({query: ${pascalCase(operationName)}Doc, ...options})
-              }
-            `
-        }
-      }
-      if (o.operation == 'mutation') {
-        operation = `export const ${operationName} = (
-            options: Omit<
-              MutationOptions<any, ${opv}>, 
-              "mutation"
-            >
-          ) => {
-            const m = client.mutate<${op}, ${opv}>({
-              mutation: ${pascalCase(operationName)}Doc,
-              ...options,
-            });
-            return m;
-          }`
-      }
-      if (o.operation == 'subscription') {
-        operation = `export const ${operationName} = (
-            options: Omit<SubscriptionOptions<${opv}>, "query">
-          ) => {
-            const q = client.subscribe<${op}, ${opv}>(
-              {
-                query: ${pascalCase(operationName)}Doc,
-                ...options,
-              }
-            )
-            return q;
-          }`
-      }
-      return operation
-    })
-    .join('\n')
+  const ops: string[] = []
+  for (const o of operations) {
+    const operationName = o.name?.value
+    if (!operationName) continue
+
+    if (o.operation === OperationTypeNode.QUERY)
+      ops.push(genForQuery(operationName, o.operation, config))
+    else if (o.operation === OperationTypeNode.MUTATION)
+      ops.push(genForMutation(operationName, o.operation, config))
+    else if (o.operation === OperationTypeNode.SUBSCRIPTION)
+      ops.push(genForSubscription(operationName, o.operation, config))
+  }
 
   return {
     prepend: imports,
     content: [
       visitor.fragments,
       ...visitorResult.definitions.filter(t => typeof t == 'string'),
-      ops,
+      ...ops,
     ].join('\n'),
   }
 }
 
-export const validate: PluginValidateFn<Config> = (_, __, config) => {
+export const validate: PluginValidateFn<SvelteApolloPluginConfig> = (_, __, config) => {
   if (!config.clientPath) {
     console.warn('Client path is not present in config')
   }
+}
+
+function genForQuery(
+  operationName: string,
+  operationType: string,
+  config: SvelteApolloPluginConfig
+) {
+  const op = `${pascalCase(operationName)}${pascalCase(operationType)} | null`
+  const opv = `${pascalCase(operationName)}${pascalCase(operationType)}Variables`
+  const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
+
+  let result = `
+export const ${operationName} = (options: Omit<WatchQueryOptions<${opv}, ${op}>, 'query'>):
+  readonly [
+    Readable<ApolloQueryResult<${op}>>,
+    ObservableQuery<${op}, ${opv}>
+  ] => {
+  const query = client.watchQuery({ query: ${doc}, ...options })
+  const result = readable<ApolloQueryResult<${op}>>(
+    { data: null, loading: true, error: undefined, networkStatus: NetworkStatus.loading },
+    (set) => {
+      query.subscribe(
+        v => set(v),
+        e => set({ data: null, loading: false, error: e, networkStatus: NetworkStatus.error })
+      )
+    }
+  )
+  return [result, query]
+}`
+  if (config.asyncQuery) {
+    result += `
+export const Async${operationName} = (options: Omit<QueryOptions<${opv}, ${op}>, "query">) =>
+  client.query({ query: ${doc}, ...options })`
+  }
+  return result
+}
+
+function genForMutation(
+  operationName: string,
+  operationType: string,
+  config: SvelteApolloPluginConfig
+) {
+  const op = `${pascalCase(operationName)}${pascalCase(operationType)} | null`
+  const opv = `${pascalCase(operationName)}${pascalCase(operationType)}Variables`
+  const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
+
+  return `
+export const ${operationName} = (options: Omit<MutationOptions<${op}, ${opv}>, "mutation">) =>
+  client.mutate({ mutation: ${doc}, ...options })`
+}
+
+function genForSubscription(
+  operationName: string,
+  operationType: string,
+  config: SvelteApolloPluginConfig
+) {
+  const op = `${pascalCase(operationName)}${pascalCase(operationType)} | null`
+  const opv = `${pascalCase(operationName)}${pascalCase(operationType)}Variables`
+  const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
+
+  return `
+export const ${operationName} = (options: Omit<SubscriptionOptions<${opv}, ${op}>, "query">) =>
+  client.subscribe({ query: ${doc}, ...options })`
 }

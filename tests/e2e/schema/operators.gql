@@ -1,0 +1,15 @@
+query GetCompaniesQuery {
+  getCompanies {
+    ...FullCompanyInfo
+  }
+}
+mutation UpsertCompanyMutation($input: CompanyUpsertInput!) {
+  upsertCompany(input: $input) {
+    ...FullCompanyInfo
+  }
+}
+
+fragment FullCompanyInfo on CompanyOutput {
+  id
+  name
+}

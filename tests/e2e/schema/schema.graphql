@@ -1,0 +1,22 @@
+type Query {
+  getCompanies(pagination: PaginationInput): [CompanyOutput!]!
+}
+
+type Mutation {
+  upsertCompany(input: CompanyUpsertInput!): CompanyOutput!
+}
+
+input PaginationInput {
+  take: Int
+  skip: Int
+}
+
+input CompanyUpsertInput {
+  id: ID
+  name: String!
+}
+
+type CompanyOutput {
+  id: ID!
+  name: String!
+}

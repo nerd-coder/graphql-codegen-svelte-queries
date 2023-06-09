@@ -1,3 +1,6 @@
 /node_modules
 /dist
 .vscode/
+
+# E2e
+tests/e2e/generated

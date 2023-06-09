@@ -3,17 +3,22 @@
   "version": "0.1.1",
   "description": "Codegen plugins to generate fully typed queries for Svelte + Apollo",
   "packageManager": "pnpm@8.5.1",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
+    "dev": "concurrently npm:build:w npm:codegen:w -c green,magenta -k",
     "build": "rollup -c",
+    "build:w": "npm run build -- -w",
     "prettier": "prettier --write .",
     "lint": "eslint .",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "release": "release-it"
+    "codegen": "graphql-codegen -c tests/e2e/codegen.ts",
+    "codegen:w": "npm run codegen -- -w dist/**",
+    "release": "release-it",
+    "prepare": "svelte-kit sync"
   },
   "repository": "github:nerd-coder/graphql-codegen-svelte-apollo",
   "keywords": [
@@ -67,12 +72,16 @@
     }
   },
   "devDependencies": {
+    "@apollo/client": "^3.7.15",
     "@graphql-codegen/plugin-helpers": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.0.0",
+    "@graphql-codegen/typescript-operations": "^4.0.0",
     "@graphql-codegen/visitor-plugin-common": "^4.0.0",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-typescript": "^11.1.1",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
+    "concurrently": "^8.1.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "graphql": "^16.6.0",
@@ -80,10 +89,14 @@
     "release-it": "^15.11.0",
     "rollup": "^3.24.0",
     "rollup-plugin-filesize": "^10.0.0",
+    "svelte": "^3.59.1",
     "vitest": "^0.32.0"
   },
   "dependencies": {
-    "pascal-case": "^3.1.2"
+    "@graphql-codegen/cli": "^4.0.1",
+    "@sveltejs/kit": "^1.20.2",
+    "pascal-case": "^3.1.2",
+    "vite": "^4.3.9"
   },
   "peerDependencies": {
     "graphql": "^15.0.0 || ^16.0.0"
