@@ -17,8 +17,7 @@
     "coverage": "vitest run --coverage",
     "codegen": "graphql-codegen -c tests/e2e/codegen.ts",
     "codegen:w": "npm run codegen -- -w dist/**",
-    "release": "release-it",
-    "prepare": "svelte-kit sync"
+    "release": "release-it"
   },
   "repository": "github:nerd-coder/graphql-codegen-svelte-apollo",
   "keywords": [
