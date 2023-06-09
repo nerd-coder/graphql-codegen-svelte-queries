@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "lib": ["ES2015"],
-    "types": ["vitest/globals"],
     "noEmit": true,
     "rootDir": "..",
     "paths": { "@nerd-coder/graphql-codegen-svelte-apollo": ["../src/index.ts"] }

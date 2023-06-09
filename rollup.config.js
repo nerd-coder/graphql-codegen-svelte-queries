@@ -10,10 +10,7 @@ const sourcemap = true
 
 export default defineConfig({
   input: './src/index.ts',
-  output: [
-    { file: pkg.module, format: 'es', sourcemap },
-    { file: pkg.main, format: 'cjs', sourcemap },
-  ],
+  output: [{ file: pkg.main, format: 'cjs', sourcemap }],
   external: ['graphql'],
-  plugins: [typescript({ exclude: ['tests/**'] }), filesize(), nodeResolve(), commonjs()],
+  plugins: [typescript({ exclude: ['tests/**', 'e2e/**'] }), filesize(), nodeResolve(), commonjs()],
 })

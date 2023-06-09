@@ -5,7 +5,6 @@ import type { SvelteApolloPluginConfig } from '@nerd-coder/graphql-codegen-svelt
 const typescriptConfig: TypeScriptPluginConfig = {
   useTypeImports: true,
   strictScalars: true,
-  // defaultMapper: 'Partial<{T}>',
 }
 
 const codegenSvelteApollo: SvelteApolloPluginConfig = {
@@ -14,11 +13,11 @@ const codegenSvelteApollo: SvelteApolloPluginConfig = {
 }
 
 const config: CodegenConfig = {
-  schema: 'tests/e2e/schema/*.graphql',
-  documents: 'tests/e2e/schema/*.gql',
+  schema: 'e2e/schema/*.graphql',
+  documents: 'e2e/schema/*.gql',
   generates: {
-    'tests/e2e/generated/_types.ts': {
-      plugins: ['typescript', 'typescript-operations', '../../dist/index.cjs'],
+    'e2e/generated/_types.ts': {
+      plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
       config: {
         ...typescriptConfig,
         ...codegenSvelteApollo,

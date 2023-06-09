@@ -3,4 +3,4 @@
 .vscode/
 
 # E2e
-tests/e2e/generated
+e2e/generated

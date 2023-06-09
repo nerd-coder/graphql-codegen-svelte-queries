@@ -70,7 +70,13 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
   const operationImports = [
     ...(config.asyncQuery ? ['QueryOptions'] : []),
     ...(operations.some(op => op.operation == 'query')
-      ? ['ApolloQueryResult', 'ObservableQuery', 'WatchQueryOptions']
+      ? [
+          'ApolloQueryResult',
+          'ObservableQuery',
+          'WatchQueryOptions',
+          'OperationVariables',
+          'DocumentNode',
+        ]
       : []),
     ...(operations.some(op => op.operation == 'mutation') ? ['MutationOptions'] : []),
     ...(operations.some(op => op.operation == 'subscription') ? ['SubscriptionOptions'] : []),
@@ -79,8 +85,42 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
   const imports = [
     `import type { ${operationImports.join(', ')} } from '@apollo/client'`,
     `import { gql, NetworkStatus } from '@apollo/client/core'`,
-    `import { readable, type Readable } from 'svelte/store'`,
+    `import { readable, derived, type Readable } from 'svelte/store'`,
     `import client from '${config.clientPath}'`,
+  ]
+  const helpers = [
+    `
+type ReadableQueryResult<T, V extends OperationVariables> = {
+  readonly query: ObservableQuery<T, V>
+} & Required<{
+  readonly [P in keyof ApolloQueryResult<T>]: Readable<
+    P extends 'data' ? T | null : ApolloQueryResult<T>[P]
+  >
+}>`,
+    `type ReadableQueryOption<T, V extends OperationVariables> = Omit<WatchQueryOptions<V, T>, 'query'>`,
+    `
+function __buildReadableQuery<T, V extends OperationVariables>(
+  doc: DocumentNode,
+  options?: ReadableQueryOption<T, V>
+): ReadableQueryResult<T, V> {
+  const query = client.watchQuery({ query: doc, ...options })
+  const result = readable<ApolloQueryResult<T | null>>(
+    { data: null, loading: true, networkStatus: NetworkStatus.loading },
+    set => {
+      query.subscribe(
+        v => set(v),
+        e => set({ data: null, loading: false, error: e, networkStatus: NetworkStatus.error })
+      )
+    }
+  )
+  const data = derived(result, r => r.data)
+  const error = derived(result, r => r.error)
+  const errors = derived(result, r => r.errors)
+  const loading = derived(result, r => r.loading)
+  const networkStatus = derived(result, r => r.networkStatus)
+  const partial = derived(result, r => r.partial)
+  return { query, data, error, errors, loading, networkStatus, partial }
+}`,
   ]
 
   const ops: string[] = []
@@ -97,7 +137,7 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
   }
 
   return {
-    prepend: imports,
+    prepend: [...imports, ...helpers],
     content: [
       visitor.fragments,
       ...visitorResult.definitions.filter(t => typeof t == 'string'),
@@ -115,33 +155,18 @@ function genForQuery(
   operationType: string,
   config: SvelteApolloPluginConfig
 ) {
-  const op = `${pascalCase(operationName)}${pascalCase(operationType)} | null`
+  const op = `${pascalCase(operationName)}${pascalCase(operationType)}`
   const opv = `${pascalCase(operationName)}${pascalCase(operationType)}Variables`
   const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
 
   let result = `
-export const ${operationName} = (options: Omit<WatchQueryOptions<${opv}, ${op}>, 'query'>):
-  readonly [
-    Readable<ApolloQueryResult<${op}>>,
-    ObservableQuery<${op}, ${opv}>
-  ] => {
-  const query = client.watchQuery({ query: ${doc}, ...options })
-  const result = readable<ApolloQueryResult<${op}>>(
-    { data: null, loading: true, error: undefined, networkStatus: NetworkStatus.loading },
-    (set) => {
-      query.subscribe(
-        v => set(v),
-        e => set({ data: null, loading: false, error: e, networkStatus: NetworkStatus.error })
-      )
-    }
-  )
-  return [result, query]
-}`
-  if (config.asyncQuery) {
+export const ${operationName} = (options?: ReadableQueryOption<${op}, ${opv}>) =>
+  __buildReadableQuery(${doc}, options)`
+  if (config.asyncQuery)
     result += `
-export const Async${operationName} = (options: Omit<QueryOptions<${opv}, ${op}>, "query">) =>
-  client.query({ query: ${doc}, ...options })`
-  }
+export const Async${operationName} = (options?: Omit<QueryOptions<${opv}, ${op}>, 'query'>) =>
+  client.query<${op}, ${opv}>({ query: ${doc}, ...options })`
+
   return result
 }
 
@@ -150,12 +175,12 @@ function genForMutation(
   operationType: string,
   config: SvelteApolloPluginConfig
 ) {
-  const op = `${pascalCase(operationName)}${pascalCase(operationType)} | null`
+  const op = `${pascalCase(operationName)}${pascalCase(operationType)}`
   const opv = `${pascalCase(operationName)}${pascalCase(operationType)}Variables`
   const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
 
   return `
-export const ${operationName} = (options: Omit<MutationOptions<${op}, ${opv}>, "mutation">) =>
+export const ${operationName} = (options?: Omit<MutationOptions<${op}, ${opv}>, 'mutation'> ) =>
   client.mutate({ mutation: ${doc}, ...options })`
 }
 
@@ -164,11 +189,11 @@ function genForSubscription(
   operationType: string,
   config: SvelteApolloPluginConfig
 ) {
-  const op = `${pascalCase(operationName)}${pascalCase(operationType)} | null`
+  const op = `${pascalCase(operationName)}${pascalCase(operationType)}`
   const opv = `${pascalCase(operationName)}${pascalCase(operationType)}Variables`
   const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
 
   return `
-export const ${operationName} = (options: Omit<SubscriptionOptions<${opv}, ${op}>, "query">) =>
+export const ${operationName} = (options?: Omit<SubscriptionOptions<${opv}, ${op}>, "query">) =>
   client.subscribe({ query: ${doc}, ...options })`
 }

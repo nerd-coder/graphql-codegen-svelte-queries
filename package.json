@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "codegen": "graphql-codegen -c tests/e2e/codegen.ts",
+    "codegen": "graphql-codegen -c e2e/codegen.ts",
     "codegen:w": "npm run codegen -- -w dist/**",
     "release": "release-it"
   },
