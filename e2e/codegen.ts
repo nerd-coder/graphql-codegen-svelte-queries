@@ -10,17 +10,30 @@ const typescriptConfig: TypeScriptPluginConfig = {
 const codegenSvelteApollo: SvelteApolloPluginConfig = {
   clientPath: '../client',
   asyncQuery: true,
+  clientType: 'apollo',
+}
+const codegenSvelteUrql: SvelteApolloPluginConfig = {
+  clientPath: '../client',
+  asyncQuery: true,
+  clientType: 'urql',
 }
 
 const config: CodegenConfig = {
   schema: 'e2e/schema/*.graphql',
   documents: 'e2e/schema/*.gql',
   generates: {
-    'e2e/generated/_types.ts': {
+    'e2e/generated/_apollo.ts': {
       plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
       config: {
         ...typescriptConfig,
         ...codegenSvelteApollo,
+      },
+    },
+    'e2e/generated/_urql.ts': {
+      plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
+      config: {
+        ...typescriptConfig,
+        ...codegenSvelteUrql,
       },
     },
   },

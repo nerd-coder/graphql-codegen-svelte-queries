@@ -9,6 +9,8 @@ export interface SvelteApolloPluginConfig
    * (should point to a file with an apollo-client as `default` export)
    */
   clientPath: string
+  /** Type of client. Support `apollo` and `urql` */
+  clientType: 'apollo' | 'urql'
   /** @default false */
   asyncQuery?: boolean
   /** @default 'Doc' */
@@ -17,10 +19,13 @@ export interface SvelteApolloPluginConfig
 
 export function getDefaultOptions(config?: SvelteApolloPluginConfig): SvelteApolloPluginConfig {
   const clientPath = config?.clientPath
+  const clientType = config?.clientType
   if (!clientPath) throw new Error('`config.clientPath` is required')
+  if (!clientType) throw new Error('`config.clientType` is required')
   return {
     ...config,
     clientPath,
+    clientType,
     asyncQuery: config?.asyncQuery || false,
     documentVariableSuffix: config?.documentVariableSuffix || 'Doc',
   }
