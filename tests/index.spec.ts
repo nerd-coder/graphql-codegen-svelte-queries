@@ -1,5 +1,5 @@
 import { buildSchema, parse } from 'graphql'
-import { plugin } from '@nerd-coder/graphql-codegen-svelte-apollo'
+import { plugin } from '@nerd-coder/graphql-codegen-svelte-queries'
 
 describe('graphql', async () => {
   const testcase = {
@@ -32,7 +32,7 @@ describe('graphql', async () => {
 
   const schema = buildSchema(testcase.textSchema)
   const docs = testcase.operators.map(z => parse(z)).map(document => ({ location: '', document }))
-  const result = await plugin(schema, docs, { clientPath: './fakeClient.ts' })
+  const result = await plugin(schema, docs, { clientPath: './fakeClient.ts', clientType: 'apollo' })
 
   it('should import client', async () => {
     expect(result.prepend).contain(`import client from './fakeClient.ts'`)
@@ -43,6 +43,8 @@ describe('graphql', async () => {
   })
 
   it('should contains Query defination', async () => {
-    expect(result.content).toMatch(/^export const test = \(options\?: ReadableQueryOption<TestQuery, TestQueryVariables>\)/gm)
+    expect(result.content).toMatch(
+      /^export const test = \(options\?: ReadableQueryOption<TestQuery, TestQueryVariables>\)/gm
+    )
   })
 })

@@ -3,6 +3,6 @@
     "strict": true,
     "noEmit": true,
     "rootDir": "..",
-    "paths": { "@nerd-coder/graphql-codegen-svelte-apollo": ["../src/index.ts"] }
+    "paths": { "@nerd-coder/graphql-codegen-svelte-queries": ["../src/index.ts"] }
   }
 }

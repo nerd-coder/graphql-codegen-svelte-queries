@@ -1,7 +1,7 @@
 {
-  "name": "@nerd-coder/graphql-codegen-svelte-apollo",
+  "name": "@nerd-coder/graphql-codegen-svelte-queries",
   "version": "0.3.0",
-  "description": "Codegen plugins to generate fully typed queries for Svelte + Apollo",
+  "description": "Codegen plugins to generate fully typed queries for Svelte with Apollo and Urql",
   "packageManager": "pnpm@8.5.1",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -19,11 +19,12 @@
     "codegen:w": "npm run codegen -- -w dist/**",
     "release": "release-it"
   },
-  "repository": "github:nerd-coder/graphql-codegen-svelte-apollo",
+  "repository": "github:nerd-coder/graphql-codegen-svelte-queries",
   "keywords": [
     "graphql",
     "typescript",
     "apollo-client",
+    "urql",
     "code-generator"
   ],
   "author": "Toanzzz",

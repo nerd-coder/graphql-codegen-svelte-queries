@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript'
-import type { SvelteApolloPluginConfig } from '@nerd-coder/graphql-codegen-svelte-apollo'
+import type { SvelteApolloPluginConfig } from '@nerd-coder/graphql-codegen-svelte-queries'
 
 const typescriptConfig: TypeScriptPluginConfig = {
   useTypeImports: true,

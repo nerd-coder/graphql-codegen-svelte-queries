@@ -1,4 +1,4 @@
-# Svelte x Apollo - GrapqhQL Codegen Plugin
+# Svelte x Apollo x Urql - GrapqhQL Codegen Plugin
 
 Inspired by [ticruz38's work](https://github.com/ticruz38/graphql-codegen-svelte-apollo)
 
@@ -27,7 +27,7 @@ npm i -S graphql
 npm i -D @graphql-codegen/cli
 npm i -D @graphql-codegen/typescript
 npm i -D @graphql-codegen/typescript-operations
-npm i -D @nerd-coder/graphql-codegen-svelte-apollo
+npm i -D @nerd-coder/graphql-codegen-svelte-queries
 ```
 
 ## API Reference
@@ -63,7 +63,7 @@ path/to/file.ts:
   plugins:
     - typescript
     - typescript-operations
-    - @nerd-coder/graphql-codegen-svelte-apollo
+    - @nerd-coder/graphql-codegen-svelte-queries
   config:
     clientPath: PATH_TO_APOLLO_CLIENT
     asyncQuery: true
@@ -104,7 +104,7 @@ path/to/file.ts:
   plugins:
     - typescript
     - typescript-operations
-    - @nerd-coder/graphql-codegen-svelte-apollo
+    - @nerd-coder/graphql-codegen-svelte-queries
   config:
     clientPath: PATH_TO_APOLLO_CLIENT
 ```
