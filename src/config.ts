@@ -4,8 +4,14 @@ import type { TypeScriptDocumentsPluginConfig } from '@graphql-codegen/typescrip
 export interface SvelteApolloPluginConfig
   extends TypeScriptPluginConfig,
     TypeScriptDocumentsPluginConfig {
+  /**
+   * Path to the apollo client for this project
+   * (should point to a file with an apollo-client as `default` export)
+   */
   clientPath: string
+  /** @default false */
   asyncQuery?: boolean
+  /** @default 'Doc' */
   documentVariableSuffix?: string
 }
 

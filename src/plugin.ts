@@ -23,16 +23,14 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
   const allAst = concatAST(documents.map(d => d.document).filter((a): a is DocumentNode => !!a))
 
   const allFragments: LoadedFragment[] = [
-    ...(
-      allAst.definitions.filter(
-        d => d.kind === Kind.FRAGMENT_DEFINITION
-      ) as FragmentDefinitionNode[]
-    ).map(fragmentDef => ({
-      node: fragmentDef,
-      name: fragmentDef.name.value,
-      onType: fragmentDef.typeCondition.name.value,
-      isExternal: false,
-    })),
+    ...allAst.definitions
+      .filter((d): d is FragmentDefinitionNode => d.kind === Kind.FRAGMENT_DEFINITION)
+      .map<LoadedFragment>(def => ({
+        node: def,
+        name: def.name.value,
+        onType: def.typeCondition.name.value,
+        isExternal: false,
+      })),
     ...(config.externalFragments || []),
   ]
 
