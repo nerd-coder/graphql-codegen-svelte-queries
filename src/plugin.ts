@@ -20,6 +20,7 @@ import { genForUrqlMutation } from './urql/mutation'
 import { genForUrqlSubscription } from './urql/subscription'
 import { getUrqlImports } from './urql/imports'
 import { getUrqlHelpers } from './urql/helper'
+import { getNames } from './naming'
 
 export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPluginOutput> = (
   schema,
@@ -51,6 +52,14 @@ export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPlug
   const prepend = [
     `import { readable, derived, type Readable } from 'svelte/store'`,
     `import client from '${config.clientPath}'`,
+    ...(config.importFrom
+      ? [
+          `import ${config.useTypeImports ? 'type ' : ''}{ ${operations
+            .map(z => getNames(z.name?.value || '', z.operation, config).slice(0, 2) /* Skip doc */)
+            .flat()
+            .join(', ')} } from '${config.importFrom}'`,
+        ]
+      : []),
     ...(config.clientType === 'apollo'
       ? [...getApolloImports(config), ...getApolloHelpers()]
       : [...getUrqlImports(config), ...getUrqlHelpers()]),

@@ -27,6 +27,11 @@ export interface SvelteQueriesPluginConfig
    * @default 'Doc'
    */
   documentVariableSuffix?: string
+  /**
+   * @description import types from generated typescript type path
+   * if not given, omit import statement.
+   */
+  importFrom?: string
 }
 
 export function getDefaultOptions(config?: SvelteQueriesPluginConfig): SvelteQueriesPluginConfig {

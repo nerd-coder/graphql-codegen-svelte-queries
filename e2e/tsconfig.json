@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "noEmit": true,
+    "importsNotUsedAsValues": "error",
     "rootDir": "..",
     "paths": { "@nerd-coder/graphql-codegen-svelte-queries": ["../src/index.ts"] }
   }

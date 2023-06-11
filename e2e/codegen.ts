@@ -9,18 +9,21 @@ const typescriptConfig: TypeScriptPluginConfig = {
 }
 
 const typeScriptDocumentsPluginConfig: TypeScriptDocumentsPluginConfig = {
-  noExport: true,
   onlyOperationTypes: true,
 }
 
 const codegenSvelteApollo: SvelteQueriesPluginConfig = {
   clientPath: '../apollo-client',
+  importFrom: './_types',
   asyncQuery: true,
+  useTypeImports: true,
   clientType: 'apollo',
 }
 const codegenSvelteUrql: SvelteQueriesPluginConfig = {
   clientPath: '../urql-client',
+  importFrom: './_types',
   asyncQuery: true,
+  useTypeImports: true,
   clientType: 'urql',
 }
 
@@ -28,21 +31,20 @@ const config: CodegenConfig = {
   schema: 'e2e/schema/*.graphql',
   documents: 'e2e/schema/*.gql',
   generates: {
-    'e2e/generated/_apollo.ts': {
-      plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
+    'e2e/generated/_types.ts': {
+      plugins: ['typescript', 'typescript-operations'],
       config: {
         ...typescriptConfig,
         ...typeScriptDocumentsPluginConfig,
-        ...codegenSvelteApollo,
       },
     },
+    'e2e/generated/_apollo.ts': {
+      plugins: ['dist/index.cjs'],
+      config: { ...codegenSvelteApollo },
+    },
     'e2e/generated/_urql.ts': {
-      plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
-      config: {
-        ...typescriptConfig,
-        ...typeScriptDocumentsPluginConfig,
-        ...codegenSvelteUrql,
-      },
+      plugins: ['dist/index.cjs'],
+      config: { ...codegenSvelteUrql },
     },
   },
 }
