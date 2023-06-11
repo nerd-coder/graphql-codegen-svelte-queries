@@ -11,12 +11,19 @@ export function genForUrqlQuery(
   const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
 
   let result = `
-export const ${operationName} = (options?: ReadableQueryOption<${op}, ${opv}>) =>
-  __buildReadableQuery(${doc}, options)`
+export const ${operationName} = (
+  options?: ReadableQueryOption<${op}, ${opv}>
+) =>
+  __buildReadableResult(
+    queryStore({ client: client, query: ${doc}, ...options } as QueryArgs<
+      ${op},
+      ${opv}
+    >)
+  )`
   if (config.asyncQuery)
     result += `
-export const Async${operationName} = (options?: Omit<QueryOptions<${opv}, ${op}>, 'query'>) =>
-  client.query<${op}, ${opv}>({ query: ${doc}, ...options })`
+export const Async${operationName} = (variables: ${opv}) =>
+  client.query<${op}, ${opv}>(${doc}, variables)`
 
   return result
 }

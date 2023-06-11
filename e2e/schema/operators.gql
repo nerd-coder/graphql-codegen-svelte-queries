@@ -1,11 +1,19 @@
-query GetCompaniesQuery {
-  getCompanies {
+query GetCompaniesQuery($pagination: PaginationInput) {
+  getCompanies(pagination: $pagination) {
     ...FullCompanyInfo
   }
 }
 mutation UpsertCompanyMutation($input: CompanyUpsertInput!) {
   upsertCompany(input: $input) {
     ...FullCompanyInfo
+  }
+}
+
+subscription CompanyUpdated {
+  companyUpdated {
+    id
+    name
+    timestamp
   }
 }
 

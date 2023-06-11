@@ -11,6 +11,16 @@ export function genForUrqlSubscription(
   const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
 
   return `
-export const ${operationName} = (options?: Omit<SubscriptionOptions<${opv}, ${op}>, "query">) =>
-  client.subscribe({ query: ${doc}, ...options })`
+export const ${operationName} = (
+  options?: ReadableSubscriptionOption<
+    ${op},
+    ${opv}
+  >
+) =>
+  __buildReadableResult(
+    subscriptionStore({ client: client, query: ${doc}, ...options } as SubscriptionArgs<
+      ${op},
+      ${opv}
+    >)
+  )`
 }

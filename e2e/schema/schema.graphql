@@ -6,6 +6,10 @@ type Mutation {
   upsertCompany(input: CompanyUpsertInput!): CompanyOutput!
 }
 
+type Subscription {
+  companyUpdated: CompanySubscriptionOutput
+}
+
 input PaginationInput {
   take: Int
   skip: Int
@@ -19,4 +23,10 @@ input CompanyUpsertInput {
 type CompanyOutput {
   id: ID!
   name: String!
+}
+
+type CompanySubscriptionOutput {
+  id: ID!
+  name: String!
+  timestamp: Int
 }

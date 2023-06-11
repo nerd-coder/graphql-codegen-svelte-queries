@@ -1,7 +1,7 @@
 import { pascalCase } from 'pascal-case'
 import type { SvelteApolloPluginConfig } from '../config'
 
-export function genForSubscription(
+export function genForApolloSubscription(
   operationName: string,
   operationType: string,
   config: SvelteApolloPluginConfig

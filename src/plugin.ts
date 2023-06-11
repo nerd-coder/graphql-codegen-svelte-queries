@@ -10,11 +10,16 @@ import {
   OperationTypeNode,
 } from 'graphql'
 import { getDefaultOptions, type SvelteApolloPluginConfig } from './config'
-import { genForQuery } from './apollo/query'
-import { genForMutation } from './apollo/mutation'
-import { genForSubscription } from './apollo/subscription'
+import { genForApolloQuery } from './apollo/query'
+import { genForApolloMutation } from './apollo/mutation'
+import { genForApolloSubscription } from './apollo/subscription'
 import { apolloHelpers } from './apollo/helper'
 import { apolloImports } from './apollo/imports'
+import { genForUrqlQuery } from './urql/query'
+import { genForUrqlMutation } from './urql/mutation'
+import { genForUrqlSubscription } from './urql/subscription'
+import { urqlImports } from './urql/imports'
+import { urqlHelpers } from './urql/helper'
 
 export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPluginOutput> = (
   schema,
@@ -49,9 +54,12 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
     (d): d is OperationDefinitionNode => d.kind === Kind.OPERATION_DEFINITION
   )
 
-  const imports = [
+  const prepend = [
     `import { readable, derived, type Readable } from 'svelte/store'`,
     `import client from '${config.clientPath}'`,
+    ...(config.clientType === 'apollo'
+      ? [...apolloImports, ...apolloHelpers]
+      : [...urqlImports, ...urqlHelpers]),
   ]
 
   const ops: string[] = []
@@ -59,16 +67,23 @@ export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPlugi
     const operationName = o.name?.value
     if (!operationName) continue
 
-    if (o.operation === OperationTypeNode.QUERY)
-      ops.push(genForQuery(operationName, o.operation, config))
-    else if (o.operation === OperationTypeNode.MUTATION)
-      ops.push(genForMutation(operationName, o.operation, config))
-    else if (o.operation === OperationTypeNode.SUBSCRIPTION)
-      ops.push(genForSubscription(operationName, o.operation, config))
+    const genQ = config.clientType === 'apollo' ? genForApolloQuery : genForUrqlQuery
+    const genM = config.clientType === 'apollo' ? genForApolloMutation : genForUrqlMutation
+    const genS = config.clientType === 'apollo' ? genForApolloSubscription : genForUrqlSubscription
+    const gen =
+      o.operation === OperationTypeNode.QUERY
+        ? genQ
+        : o.operation === OperationTypeNode.MUTATION
+        ? genM
+        : o.operation === OperationTypeNode.SUBSCRIPTION
+        ? genS
+        : null
+
+    if (gen) ops.push(gen(operationName, o.operation, config))
   }
 
   return {
-    prepend: [...imports, ...apolloImports, ...apolloHelpers],
+    prepend,
     content: [
       visitor.fragments,
       ...visitorResult.definitions.filter(t => typeof t == 'string'),

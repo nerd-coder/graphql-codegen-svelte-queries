@@ -16,7 +16,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "codegen": "graphql-codegen -c e2e/codegen.ts",
-    "codegen:w": "npm run codegen -- -w dist/**",
+    "codegen:w": "npm run codegen -- -w dist/index.cjs",
     "release": "release-it"
   },
   "repository": "github:nerd-coder/graphql-codegen-svelte-queries",
@@ -81,6 +81,7 @@
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-typescript": "^11.1.1",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
+    "@urql/svelte": "^4.0.2",
     "concurrently": "^8.1.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",

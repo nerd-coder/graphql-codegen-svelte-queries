@@ -1,18 +1,21 @@
 const operationImports = [
-  // Async query
-  'QueryOptions',
+  'gql', // Re-exported
+  'queryStore',
+  'subscriptionStore',
+]
+const typedImports = [
   // Query
-  'ApolloQueryResult',
-  'ObservableQuery',
-  'WatchQueryOptions',
-  'OperationVariables',
-  'DocumentNode',
-  // Mutation
-  'MutationOptions',
+  'AnyVariables',
+  'QueryArgs',
+  'OperationResultState',
   // Subscription
-  'SubscriptionOptions',
+  'SubscriptionArgs',
 ]
 export const urqlImports = [
-  `import type { ${operationImports.join(', ')} } from '@apollo/client'`,
-  `import { gql, NetworkStatus } from '@apollo/client/core'`,
+  `import { 
+  ${[
+    ...operationImports,
+    ...typedImports.map(z => 'type ' + z), // prefix with type
+  ].join(',\n')} 
+} from '@urql/svelte'`,
 ]

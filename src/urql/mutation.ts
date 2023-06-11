@@ -11,6 +11,6 @@ export function genForUrqlMutation(
   const doc = `${pascalCase(operationName)}${config.documentVariableSuffix}`
 
   return `
-export const ${operationName} = (options?: Omit<MutationOptions<${op}, ${opv}>, 'mutation'> ) =>
-  client.mutate({ mutation: ${doc}, ...options })`
+export const ${operationName} = (variables: ${opv}) =>
+  client.mutation<${op}, ${opv}>(${doc}, variables)`
 }

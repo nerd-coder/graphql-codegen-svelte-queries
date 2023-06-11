@@ -8,12 +8,12 @@ const typescriptConfig: TypeScriptPluginConfig = {
 }
 
 const codegenSvelteApollo: SvelteApolloPluginConfig = {
-  clientPath: '../client',
+  clientPath: '../apollo-client',
   asyncQuery: true,
   clientType: 'apollo',
 }
 const codegenSvelteUrql: SvelteApolloPluginConfig = {
-  clientPath: '../client',
+  clientPath: '../urql-client',
   asyncQuery: true,
   clientType: 'urql',
 }
