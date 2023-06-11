@@ -1,3 +1,5 @@
+import type { SvelteQueriesPluginConfig } from '../config'
+
 const operationImports = [
   'gql', // Re-exported
   'queryStore',
@@ -11,11 +13,11 @@ const typedImports = [
   // Subscription
   'SubscriptionArgs',
 ]
-export const urqlImports = [
+export const getUrqlImports = (config: SvelteQueriesPluginConfig) => [
   `import { 
   ${[
     ...operationImports,
-    ...typedImports.map(z => 'type ' + z), // prefix with type
+    ...typedImports.map(z => (config.useTypeImports ? 'type ' : '') + z),
   ].join(',\n')} 
 } from '@urql/svelte'`,
 ]

@@ -13,13 +13,13 @@ import { getDefaultOptions, type SvelteQueriesPluginConfig } from './config'
 import { genForApolloQuery } from './apollo/query'
 import { genForApolloMutation } from './apollo/mutation'
 import { genForApolloSubscription } from './apollo/subscription'
-import { apolloHelpers } from './apollo/helper'
-import { apolloImports } from './apollo/imports'
+import { getApolloHelpers } from './apollo/helper'
+import { getApolloImports } from './apollo/imports'
 import { genForUrqlQuery } from './urql/query'
 import { genForUrqlMutation } from './urql/mutation'
 import { genForUrqlSubscription } from './urql/subscription'
-import { urqlImports } from './urql/imports'
-import { urqlHelpers } from './urql/helper'
+import { getUrqlImports } from './urql/imports'
+import { getUrqlHelpers } from './urql/helper'
 
 export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPluginOutput> = (
   schema,
@@ -41,13 +41,7 @@ export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPlug
     ...(config.externalFragments || []),
   ]
 
-  const visitor = new ClientSideBaseVisitor(
-    schema,
-    allFragments,
-    config,
-    { documentVariableSuffix: config.documentVariableSuffix },
-    documents
-  )
+  const visitor = new ClientSideBaseVisitor(schema, allFragments, config, config, documents)
   const visitorResult = visit(allAst, visitor)
 
   const operations = allAst.definitions.filter(
@@ -58,8 +52,8 @@ export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPlug
     `import { readable, derived, type Readable } from 'svelte/store'`,
     `import client from '${config.clientPath}'`,
     ...(config.clientType === 'apollo'
-      ? [...apolloImports, ...apolloHelpers]
-      : [...urqlImports, ...urqlHelpers]),
+      ? [...getApolloImports(config), ...getApolloHelpers()]
+      : [...getUrqlImports(config), ...getUrqlHelpers()]),
   ]
 
   const ops: string[] = []

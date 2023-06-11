@@ -1,4 +1,4 @@
-export const urqlHelpers = [
+export const getUrqlHelpers = () => [
   `
 type ReadableQueryOption<T, V extends AnyVariables> = Omit<QueryArgs<T, V>, 'query' | 'client'>
 type ReadableSubscriptionOption<T, V extends AnyVariables> = Omit<

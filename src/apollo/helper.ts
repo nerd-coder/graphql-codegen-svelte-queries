@@ -1,4 +1,4 @@
-export const apolloHelpers = [
+export const getApolloHelpers = () => [
   `
 type ReadableQueryResult<
   T,

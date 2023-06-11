@@ -1,18 +1,24 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript'
-import type { SvelteApolloPluginConfig } from '@nerd-coder/graphql-codegen-svelte-queries'
+import type { TypeScriptDocumentsPluginConfig } from '@graphql-codegen/typescript-operations'
+import type { SvelteQueriesPluginConfig } from '@nerd-coder/graphql-codegen-svelte-queries'
 
 const typescriptConfig: TypeScriptPluginConfig = {
   useTypeImports: true,
   strictScalars: true,
 }
 
-const codegenSvelteApollo: SvelteApolloPluginConfig = {
+const typeScriptDocumentsPluginConfig: TypeScriptDocumentsPluginConfig = {
+  noExport: true,
+  onlyOperationTypes: true,
+}
+
+const codegenSvelteApollo: SvelteQueriesPluginConfig = {
   clientPath: '../apollo-client',
   asyncQuery: true,
   clientType: 'apollo',
 }
-const codegenSvelteUrql: SvelteApolloPluginConfig = {
+const codegenSvelteUrql: SvelteQueriesPluginConfig = {
   clientPath: '../urql-client',
   asyncQuery: true,
   clientType: 'urql',
@@ -26,6 +32,7 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
       config: {
         ...typescriptConfig,
+        ...typeScriptDocumentsPluginConfig,
         ...codegenSvelteApollo,
       },
     },
@@ -33,6 +40,7 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-operations', 'dist/index.cjs'],
       config: {
         ...typescriptConfig,
+        ...typeScriptDocumentsPluginConfig,
         ...codegenSvelteUrql,
       },
     },

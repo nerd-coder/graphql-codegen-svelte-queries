@@ -37,7 +37,7 @@ npm i -D @nerd-coder/graphql-codegen-svelte-queries
 - type: `string`
 - required: true
 
-Path to the apollo client for this project (should point to a file with an apollo-client as default export)
+Path to the apollo or urql client for this project (should point to a file with an the client as default export)
 
 ```yml
 generates:
@@ -48,6 +48,26 @@ path/to/file.ts:
     - graphql-codegen-svelte-apollo
   config:
     clientPath: PATH_TO_APOLLO_CLIENT
+    clientType: apollo
+```
+
+### `clientType`
+
+- type: `'apollo' | 'urql'`
+- required: true
+
+Client type to generate
+
+```yml
+generates:
+path/to/file.ts:
+  plugins:
+    - typescript
+    - typescript-operations
+    - graphql-codegen-svelte-apollo
+  config:
+    clientPath: PATH_TO_APOLLO_CLIENT
+    clientType: apollo
 ```
 
 ### `asyncQuery`
@@ -66,6 +86,7 @@ path/to/file.ts:
     - @nerd-coder/graphql-codegen-svelte-queries
   config:
     clientPath: PATH_TO_APOLLO_CLIENT
+    clientType: apollo
     asyncQuery: true
 ```
 
@@ -107,6 +128,7 @@ path/to/file.ts:
     - @nerd-coder/graphql-codegen-svelte-queries
   config:
     clientPath: PATH_TO_APOLLO_CLIENT
+    clientType: apollo
 ```
 
 Codegen will pre-compile the GraphQL operation into a `DocumentNode` object, and generate a ready-to-use Apollo query for each operation you have.
@@ -176,6 +198,7 @@ path/to/file.ts:
     - graphql-codegen-svelte-apollo
   config:
     clientPath: PATH_TO_APOLLO_CLIENT
+    clientType: apollo
     asyncQuery: true
 ```
 

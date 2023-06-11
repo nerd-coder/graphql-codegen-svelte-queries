@@ -1,18 +1,31 @@
-import type { RawConfig, RawTypesConfig } from '@graphql-codegen/visitor-plugin-common'
+import type {
+  ClientSideBasePluginConfig,
+  RawConfig,
+  RawTypesConfig,
+} from '@graphql-codegen/visitor-plugin-common'
 
 export interface SvelteQueriesPluginConfig
-  extends Pick<RawTypesConfig, 'externalFragments'>,
-    Pick<RawConfig, 'namingConvention'> {
+  extends Pick<RawTypesConfig, 'externalFragments' | 'useTypeImports'>,
+    Pick<RawConfig, 'namingConvention'>,
+    Partial<Pick<ClientSideBasePluginConfig, 'documentVariableSuffix'>> {
   /**
    * Path to the apollo client for this project
    * (should point to a file with an apollo-client as `default` export)
    */
   clientPath: string
-  /** Type of client. Support `apollo` and `urql` */
+  /**
+   * Type of client. Support `apollo` and `urql`
+   */
   clientType: 'apollo' | 'urql'
-  /** @default false */
+  /**
+   * Generate `async`, Promise based query
+   * @default false
+   */
   asyncQuery?: boolean
-  /** @default 'Doc' */
+  /**
+   * Used in `ClientSideBaseVisitor` to visit DocumentNode
+   * @default 'Doc'
+   */
   documentVariableSuffix?: string
 }
 

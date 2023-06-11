@@ -1,3 +1,5 @@
+import type { SvelteQueriesPluginConfig } from '../config'
+
 const operationImports = [
   // Async query
   'QueryOptions',
@@ -11,7 +13,9 @@ const operationImports = [
   // Subscription
   'SubscriptionOptions',
 ]
-export const apolloImports = [
-  `import type { ${operationImports.join(', ')} } from '@apollo/client'`,
+export const getApolloImports = (config: SvelteQueriesPluginConfig) => [
+  `import ${config.useTypeImports ? 'type ' : ''}{ ${operationImports.join(
+    ', '
+  )} } from '@apollo/client'`,
   `import { gql, NetworkStatus } from '@apollo/client/core'`,
 ]
