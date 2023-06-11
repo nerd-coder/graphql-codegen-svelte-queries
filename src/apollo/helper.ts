@@ -14,12 +14,13 @@ type ReadableQueryResult<
   >
 }>
 type ReadableQueryOption<T, V extends OperationVariables> = Omit<WatchQueryOptions<V, T>, 'query'>
-function __buildReadableQuery<
+
+function __buildReadableResult<
   T,
   V extends OperationVariables,
   K extends Exclude<keyof T, '__typename'>
->(doc: DocumentNode, options?: ReadableQueryOption<T, V>): ReadableQueryResult<T, V, K> {
-  const query = client.watchQuery({ query: doc, ...options })
+>(query: ObservableQuery<T, V>): ReadableQueryResult<T, V, K> {
+  // const query = client.watchQuery({ query: doc, ...options })
   const result = readable<ApolloQueryResult<T | null>>(
     { data: null, loading: true, networkStatus: NetworkStatus.loading },
     set => {

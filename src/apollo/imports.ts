@@ -6,7 +6,6 @@ const operationImports = [
   'ObservableQuery',
   'WatchQueryOptions',
   'OperationVariables',
-  'DocumentNode',
   // Mutation
   'MutationOptions',
   // Subscription

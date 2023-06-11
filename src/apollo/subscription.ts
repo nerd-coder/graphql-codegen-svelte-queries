@@ -12,5 +12,5 @@ export function genForApolloSubscription(
 
   return `
 export const ${operationName} = (options?: Omit<SubscriptionOptions<${opv}, ${op}>, "query">) =>
-  client.subscribe({ query: ${doc}, ...options })`
+  client.subscribe<${op}, ${opv}>({ query: ${doc}, ...options })`
 }

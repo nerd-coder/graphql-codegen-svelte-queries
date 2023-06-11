@@ -12,7 +12,7 @@ export function genForApolloQuery(
 
   let result = `
 export const ${operationName} = (options?: ReadableQueryOption<${op}, ${opv}>) =>
-  __buildReadableQuery(${doc}, options)`
+  __buildReadableResult(client.watchQuery({ query: ${doc}, ...options }))`
   if (config.asyncQuery)
     result += `
 export const Async${operationName} = (options?: Omit<QueryOptions<${opv}, ${op}>, 'query'>) =>
