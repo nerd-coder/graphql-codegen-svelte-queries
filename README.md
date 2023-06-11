@@ -85,12 +85,19 @@ path/to/file.ts:
     asyncQuery: true
 ```
 
-### Other recommended configuration
+### `importFrom`
 
-For lean code generation, your configuration should also specify those config options (belong to `TypeScriptDocumentsPluginConfig` type in `@graphql-codegen/typescript-operations` package)
+- type: `string`
+- default: `''`
+
+When provided, import types from the generated typescript types file path. if not given, omit import statement.
+
+I you're not using this config, it's recommended to also specify those additional config options for lean code generation:
 
 - `noExport: true`
 - `onlyOperationTypes: true`
+
+_(Those config abolve are belong to `TypeScriptDocumentsPluginConfig` type in `@graphql-codegen/typescript-operations` package)_
 
 ## Usage Example
 
@@ -222,3 +229,7 @@ In you application code, you can import it from the generated file, and use the 
   {/each} {/await}
 </ul>
 ```
+
+## TODO
+
+- Add more example
