@@ -1,10 +1,10 @@
 import { convertFactory } from '@graphql-codegen/visitor-plugin-common'
-import type { SvelteApolloPluginConfig } from '../config'
+import type { SvelteQueriesPluginConfig } from '../config'
 
 export function genForUrqlSubscription(
   operationName: string,
   operationType: string,
-  config: SvelteApolloPluginConfig
+  config: SvelteQueriesPluginConfig
 ) {
   const convert = convertFactory(config)
   const op = convert(operationName) + convert(operationType)

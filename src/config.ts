@@ -1,9 +1,8 @@
-import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript'
-import type { TypeScriptDocumentsPluginConfig } from '@graphql-codegen/typescript-operations'
+import type { RawConfig, RawTypesConfig } from '@graphql-codegen/visitor-plugin-common'
 
-export interface SvelteApolloPluginConfig
-  extends TypeScriptPluginConfig,
-    TypeScriptDocumentsPluginConfig {
+export interface SvelteQueriesPluginConfig
+  extends Pick<RawTypesConfig, 'externalFragments'>,
+    Pick<RawConfig, 'namingConvention'> {
   /**
    * Path to the apollo client for this project
    * (should point to a file with an apollo-client as `default` export)
@@ -17,7 +16,7 @@ export interface SvelteApolloPluginConfig
   documentVariableSuffix?: string
 }
 
-export function getDefaultOptions(config?: SvelteApolloPluginConfig): SvelteApolloPluginConfig {
+export function getDefaultOptions(config?: SvelteQueriesPluginConfig): SvelteQueriesPluginConfig {
   const clientPath = config?.clientPath
   const clientType = config?.clientType
   if (!clientPath) throw new Error('`config.clientPath` is required')

@@ -9,7 +9,7 @@ import {
   visit,
   OperationTypeNode,
 } from 'graphql'
-import { getDefaultOptions, type SvelteApolloPluginConfig } from './config'
+import { getDefaultOptions, type SvelteQueriesPluginConfig } from './config'
 import { genForApolloQuery } from './apollo/query'
 import { genForApolloMutation } from './apollo/mutation'
 import { genForApolloSubscription } from './apollo/subscription'
@@ -21,7 +21,7 @@ import { genForUrqlSubscription } from './urql/subscription'
 import { urqlImports } from './urql/imports'
 import { urqlHelpers } from './urql/helper'
 
-export const plugin: PluginFunction<SvelteApolloPluginConfig, Types.ComplexPluginOutput> = (
+export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPluginOutput> = (
   schema,
   documents,
   _config
