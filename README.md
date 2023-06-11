@@ -85,6 +85,13 @@ path/to/file.ts:
     asyncQuery: true
 ```
 
+### Other recommended configuration
+
+For lean code generation, your configuration should also specify those config options (belong to `TypeScriptDocumentsPluginConfig` type in `@graphql-codegen/typescript-operations` package)
+
+- `noExport: true`
+- `onlyOperationTypes: true`
+
 ## Usage Example
 
 ### With Observable queries
