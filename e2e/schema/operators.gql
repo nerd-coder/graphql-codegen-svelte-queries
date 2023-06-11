@@ -1,15 +1,15 @@
-query GetCompaniesQuery($pagination: PaginationInput) {
+query GetCompanies_Query($pagination: PaginationInput) {
   getCompanies(pagination: $pagination) {
     ...FullCompanyInfo
   }
 }
-mutation UpsertCompanyMutation($input: CompanyUpsertInput!) {
+mutation UpsertCompan_yMutation($input: CompanyUpsertInput!) {
   upsertCompany(input: $input) {
     ...FullCompanyInfo
   }
 }
 
-subscription CompanyUpdated {
+subscription Company_Updated {
   companyUpdated {
     id
     name
