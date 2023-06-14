@@ -1,6 +1,9 @@
-export const getApolloHelpers = () => [
-  `
-type ReadableQueryResult<
+import type { IOperationSpec } from '../config'
+
+export const getApolloHelpers = (spec: IOperationSpec) => [
+  ...(spec.hasQ
+    ? [
+        `type ReadableQueryResult<
   T,
   V extends OperationVariables,
   K extends Exclude<keyof T, '__typename'>
@@ -12,10 +15,10 @@ type ReadableQueryResult<
   readonly [P in keyof ApolloQueryResult<T>]: Readable<
     P extends 'data' ? T | null : ApolloQueryResult<T>[P]
   >
-}>
-type ReadableQueryOption<T, V extends OperationVariables> = Omit<WatchQueryOptions<V, T>, 'query'>
+}>`,
+        `type ReadableQueryOption<T, V extends OperationVariables> = Omit<WatchQueryOptions<V, T>, 'query'>`,
 
-function __buildReadableResult<
+        `function __buildReadableResult<
   T,
   V extends OperationVariables,
   K extends Exclude<keyof T, '__typename'>
@@ -48,4 +51,6 @@ function __buildReadableResult<
   ])
   return { query, data, error, errors, loading, networkStatus, partial, errorMessages, rawData }
 }`,
+      ]
+    : []),
 ]

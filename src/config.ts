@@ -4,6 +4,12 @@ import type {
   RawTypesConfig,
 } from '@graphql-codegen/visitor-plugin-common'
 
+export interface IOperationSpec {
+  hasQ: boolean
+  hasM: boolean
+  hasS: boolean
+}
+
 export interface SvelteQueriesPluginConfig
   extends Pick<RawTypesConfig, 'externalFragments' | 'useTypeImports'>,
     Pick<RawConfig, 'namingConvention'>,

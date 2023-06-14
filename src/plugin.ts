@@ -9,7 +9,7 @@ import {
   visit,
   OperationTypeNode,
 } from 'graphql'
-import { getDefaultOptions, type SvelteQueriesPluginConfig } from './config'
+import { getDefaultOptions, type IOperationSpec, type SvelteQueriesPluginConfig } from './config'
 import { genForApolloQuery } from './apollo/query'
 import { genForApolloMutation } from './apollo/mutation'
 import { genForApolloSubscription } from './apollo/subscription'
@@ -49,6 +49,11 @@ export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPlug
     (d): d is OperationDefinitionNode => d.kind === Kind.OPERATION_DEFINITION
   )
 
+  const spec: IOperationSpec = {
+   hasQ: operations.some(o => o.operation === OperationTypeNode.QUERY),
+   hasM: operations.some(o => o.operation === OperationTypeNode.MUTATION),
+   hasS: operations.some(o => o.operation === OperationTypeNode.SUBSCRIPTION),
+  }
   const prepend = [
     `import { readable, derived, type Readable } from 'svelte/store'`,
     `import client from '${config.clientPath}'`,
@@ -61,8 +66,8 @@ export const plugin: PluginFunction<SvelteQueriesPluginConfig, Types.ComplexPlug
         ]
       : []),
     ...(config.clientType === 'apollo'
-      ? [...getApolloImports(config), ...getApolloHelpers()]
-      : [...getUrqlImports(config), ...getUrqlHelpers()]),
+      ? [...getApolloImports(config,spec), ...getApolloHelpers(spec)]
+      : [...getUrqlImports(config,spec), ...getUrqlHelpers(spec)]),
   ]
 
   const ops: string[] = []

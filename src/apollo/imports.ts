@@ -1,21 +1,22 @@
-import type { SvelteQueriesPluginConfig } from '../config'
+import type { IOperationSpec, SvelteQueriesPluginConfig } from '../config'
 
-const operationImports = [
-  // Async query
-  'QueryOptions',
-  // Query
-  'ApolloQueryResult',
-  'ObservableQuery',
-  'WatchQueryOptions',
-  'OperationVariables',
-  // Mutation
-  'MutationOptions',
-  // Subscription
-  'SubscriptionOptions',
-]
-export const getApolloImports = (config: SvelteQueriesPluginConfig) => [
-  `import ${config.useTypeImports ? 'type ' : ''}{ ${operationImports.join(
-    ', '
-  )} } from '@apollo/client'`,
+export const getApolloImports = (config: SvelteQueriesPluginConfig, spec: IOperationSpec) => [
+  `import ${config.useTypeImports ? 'type ' : ''}{ ${[
+    // Async query
+    ...(spec.hasQ
+      ? [
+          'QueryOptions',
+          // Query
+          'ApolloQueryResult',
+          'ObservableQuery',
+          'WatchQueryOptions',
+          'OperationVariables',
+        ]
+      : []),
+    // Mutation
+    ...(spec.hasM ? ['MutationOptions'] : []),
+    // Subscription
+    ...(spec.hasS ? ['SubscriptionOptions'] : []),
+  ].join(', ')} } from '@apollo/client'`,
   `import { gql, NetworkStatus } from '@apollo/client/core'`,
 ]

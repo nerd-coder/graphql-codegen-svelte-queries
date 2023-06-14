@@ -1,17 +1,21 @@
-export const getUrqlHelpers = () => [
-  `
-type ReadableQueryOption<T, V extends AnyVariables> = Omit<QueryArgs<T, V>, 'query' | 'client'>
-type ReadableSubscriptionOption<T, V extends AnyVariables> = Omit<
-  SubscriptionArgs<T, V>,
-  'query' | 'client'
->
-type ReadableQueryResult<T, V extends AnyVariables, K extends Exclude<keyof T, '__typename'>> = {
+import type { IOperationSpec } from '../config'
+
+export const getUrqlHelpers = (spec: IOperationSpec) => [
+  ...(spec.hasS
+    ? [
+        `type ReadableSubscriptionOption<T, V extends AnyVariables> = Omit<SubscriptionArgs<T, V>, 'query' | 'client'>`,
+      ]
+    : []),
+  ...(spec.hasQ
+    ? [
+        `type ReadableQueryOption<T, V extends AnyVariables> = Omit<QueryArgs<T, V>, 'query' | 'client'>`,
+        `type ReadableQueryResult<T, V extends AnyVariables, K extends Exclude<keyof T, '__typename'>> = {
   readonly query: ReturnType<typeof queryStore<T, V>>
   readonly rawData: Readable<T[K] | null>
 } & Required<{
   readonly [P in keyof OperationResultState<T, V>]: Readable<OperationResultState<T>[P]>
-}>
-function __buildReadableResult<
+}>`,
+        `function __buildReadableResult<
   T,
   V extends AnyVariables,
   K extends Exclude<keyof T, '__typename'> = Exclude<keyof T, '__typename'>
@@ -40,4 +44,6 @@ function __buildReadableResult<
     extensions: readable(),
   }
 }`,
+      ]
+    : []),
 ]
